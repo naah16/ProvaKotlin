@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AvaliacaoPratica</string>
+    <string name="description_text">Type: %s\nPrice: %d\nStatus: %s</string>
 </resources>
