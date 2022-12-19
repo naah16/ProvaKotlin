@@ -1,16 +1,15 @@
 package com.example.avaliacaopratica
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.typography
@@ -34,9 +33,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import com.example.avaliacaopratica.ui.theme.AvaliacaoPraticaTheme
+import java.lang.Boolean.parseBoolean
 import java.lang.Double.parseDouble
 
 
@@ -52,6 +50,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Body() {
     var carDetails by remember { mutableStateOf(Carro()) }
+    var carros = mutableListOf<Carro>()
     AvaliacaoPraticaTheme {
         // A surface container using the 'background' color from the theme
         Surface(
@@ -61,7 +60,6 @@ fun Body() {
             Column {
                 Text(text = "Concessionária de Seminovos", style = typography.h6, modifier = Modifier.padding(8.dp), textAlign = TextAlign.Center)
                 var modelo by remember { mutableStateOf(TextFieldValue("")) }
-                // for preview add same text to all the fields
 
                 //MODELO
                 OutlinedTextField(
@@ -97,7 +95,6 @@ fun Body() {
                             .fillMaxWidth()
                             .onGloballyPositioned { coordinates ->
                                 //This value is used to assign to the DropDown the same width
-                                //textfieldSize = coordinates.size.toSize()
                                 textfieldSize = coordinates.size.toSize()
                             },
                         label = {Text("Choose a type...")},
@@ -125,8 +122,7 @@ fun Body() {
 
                 //PREÇO
                 var preco by remember { mutableStateOf(TextFieldValue("")) }
-                // Outlined Text input field with input type number
-                // It will open the number keyboard
+                // Outlined Text input field with input type number. It will open the number keyboard
                 OutlinedTextField(value = preco,
                     modifier = Modifier
                         .padding(8.dp)
@@ -138,70 +134,61 @@ fun Body() {
                         preco = it
                     }
                 )
-
+                var mostrarLista by remember { mutableStateOf(false) }
                 //BOTÃO
                 Column(
-                    // we are using column to align our
-                    // imageview to center of the screen.
+                    // we are using column to align our imageview to center of the screen.
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(),
 
-                    // below line is used for specifying
-                    // vertical arrangement.
+                    // below line is used for specifying vertical arrangement.
                     verticalArrangement = Arrangement.Top,
 
-                    // below line is used for specifying
-                    // horizontal arrangement.
+                    // below line is used for specifying horizontal arrangement.
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    // below line is use to get
-                    // the context for our app.
-                    val interactionSource = remember { MutableInteractionSource() }
-                    val isPressed by interactionSource.collectIsPressedAsState()
+                    // below line is use to get the context for our app.                  
                     val context = LocalContext.current
-
 
                     // below line is use to create a button.
                     Button(
-                        // below line is use to add onclick
-                        // parameter for our button onclick
+                        // below line is use to add onclick parameter for our button onclick
                         onClick = {
                             // when user is clicking the button we are displaying a toast message.
-                            Toast.makeText(context, "Carro adicionado com sucesso!", Toast.LENGTH_LONG).show()
-
-                        },
-                        interactionSource = interactionSource,
-                        // in below line we are using modifier
-                        // which is use to add padding to our button
+                            Toast.makeText(context, "Car added successfully!", Toast.LENGTH_LONG).show()
+                            mostrarLista = true
+                        },                        
+                        // in below line we are using modifier which is use to add padding to our button
                         modifier = Modifier.padding(all = Dp(10F)),
 
-                        // below line is use to set or
-                        // button as enable or disable.
+                        // below line is use to set or button as enable or disable.
                         enabled = true,
 
-                        // below line is use to
-                        // add border to our button.
-                        //border = BorderStroke(width = 1.dp, brush = SolidColor(Color.BLUE)),
-
                         // below line is use to add shape for our button.
-                        shape = MaterialTheme.shapes.medium,                        
+                        shape = MaterialTheme.shapes.medium
                     )
-                    // below line is use to
-                    // add text on our button
+                    // below line is use to add text on our button
                     {
                         Text(text = "Submit")
+                    }
+                    if(mostrarLista) {
+                        val strPreco = preco.text.toString()
+                        CarProfile(carDetails)
 
-                        /*CarProfile(carDetails)
-                        val carros = mutableListOf(Carro(modelo.text,selectedText.toString(),
-                            parseDouble(preco.toString())))
+                        val carro = Carro(modelo.text,selectedText,parseDouble(strPreco))
+                        carros.add(carro)
+                        Log.d("modelo: ",modelo.text)
                         CarList(carros = carros) {
                             carDetails = it
-                        }*/
+                        }
+                        mostrarLista = false;
+                    }else{
+                        CarList(carros = carros) {
+                            carDetails = it
+                        }
                     }
-
                 }
-
             }
         }
     }
@@ -214,7 +201,7 @@ fun CarProfile(carro: Carro) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        elevation = 4.dp
+        elevation = 4.dp,
     ) {
         Column {
             Row(
@@ -223,16 +210,11 @@ fun CarProfile(carro: Carro) {
                     .padding(8.dp)
             ) {
                 Text (
-                    text = carro.model,
-                    textAlign = TextAlign.Center,
-                    fontSize = 24.sp
-                )
-                Text(
                     text = if(!expandDescription) "+" else "-",
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Black,
                     fontSize = 24.sp,
-                    color = Color(0xFF8F8F8F),
+                    color = Color.Black,
                     modifier = Modifier
                         .padding(horizontal = 8.dp)
                         .clickable {
@@ -270,19 +252,19 @@ fun CarView(carro: Carro, onClick: () -> Unit) {
     ) {
         Column {
             Text(
-                text = carro.model,
+                text = "Model: "+carro.model,
                 modifier = Modifier.padding(8.dp)
             )
             Text(
-                text = carro.type,
+                text = "Type: "+carro.type,
                 modifier = Modifier.padding(8.dp)
             )
             Text(
-                text = carro.price.toString(),
+                text = "Price: R$"+carro.price.toString(),
                 modifier = Modifier.padding(8.dp)
             )
             Text(
-                text = carro.sold.toString(),
+                text = if(!carro.sold)"Status: This vehicle is available. " else "Status: This vehicle is sold.",
                 modifier = Modifier.padding(8.dp)
             )
         }
@@ -303,8 +285,18 @@ fun CarList(
             }
         }
     } else {
-        Column {
-            Text(text = "There's no car registered yet :'(")
+        Column( modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+
+        ){
+            Row(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(8.dp)
+            ) {
+                Text(text = "There's no car registered yet :'(")
+            }
         }
     }
 }
