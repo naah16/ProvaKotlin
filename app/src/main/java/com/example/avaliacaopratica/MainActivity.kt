@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
@@ -180,7 +181,6 @@ fun Body() {
 
                         val carro = Carro(modelo.text,selectedText,parseDouble(strPreco))
                         carros.add(carro)
-                        Log.d("modelo: ",modelo.text)
                         CarList(carros = carros) {
                             carDetails = it
                         }
@@ -245,9 +245,16 @@ fun CarProfile(carro: Carro) {
 @Composable
 fun CarView(carro: Carro, onClick: () -> Unit) {
     var statusMudado by remember { mutableStateOf(carro.sold)}
+    var colorVariable = Color.White
+    if(!statusMudado){
+        colorVariable = Color.Green
+    }else{
+         colorVariable = Color.Red
+    }
+
     Card (
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth().background(color = colorVariable)
             .padding(8.dp)
             .combinedClickable(
                 onClick = {
@@ -255,6 +262,7 @@ fun CarView(carro: Carro, onClick: () -> Unit) {
                 },
                 onLongClick = {
                     statusMudado = true
+                    Modifier.background(color = Color.Blue)
                 }
             ) ,
         elevation = 4.dp
