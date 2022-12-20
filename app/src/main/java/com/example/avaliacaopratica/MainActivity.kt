@@ -6,7 +6,9 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -210,8 +212,8 @@ fun CarProfile(carro: Carro) {
                     .padding(8.dp)
             ) {
                 Text (
-                    text = if(!expandDescription) "+" else "-",
-                    textAlign = TextAlign.Center,
+                    text = "${carro.model}",
+                    textAlign = TextAlign.Start,
                     fontWeight = FontWeight.Black,
                     fontSize = 24.sp,
                     color = Color.Black,
@@ -239,15 +241,22 @@ fun CarProfile(carro: Carro) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CarView(carro: Carro, onClick: () -> Unit) {
+    var statusMudado by remember { mutableStateOf(carro.sold)}
     Card (
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable {
-                onClick()
-            },
+            .combinedClickable(
+                onClick = {
+                    onClick()
+                },
+                onLongClick = {
+                    statusMudado = true
+                }
+            ) ,
         elevation = 4.dp
     ) {
         Column {
@@ -264,7 +273,7 @@ fun CarView(carro: Carro, onClick: () -> Unit) {
                 modifier = Modifier.padding(8.dp)
             )
             Text(
-                text = if(!carro.sold)"Status: This vehicle is available. " else "Status: This vehicle is sold.",
+                text = if(!statusMudado)"Status: This vehicle is available." else "Status: This vehicle is sold.",
                 modifier = Modifier.padding(8.dp)
             )
         }
