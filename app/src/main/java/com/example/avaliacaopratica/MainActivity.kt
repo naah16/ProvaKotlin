@@ -6,10 +6,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -245,6 +242,7 @@ fun CarProfile(carro: Carro) {
 @Composable
 fun CarView(carro: Carro, onClick: () -> Unit) {
     var statusMudado by remember { mutableStateOf(carro.sold)}
+    var expandDescription by remember { mutableStateOf(false)}
     var colorVariable = Color.White
     if(!statusMudado){
         colorVariable = Color.Green
@@ -252,38 +250,61 @@ fun CarView(carro: Carro, onClick: () -> Unit) {
          colorVariable = Color.Red
     }
 
-    Card (
-        modifier = Modifier
-            .fillMaxWidth().background(color = colorVariable)
-            .padding(8.dp)
-            .combinedClickable(
-                onClick = {
-                    onClick()
-                },
-                onLongClick = {
-                    statusMudado = true
-                    Modifier.background(color = Color.Blue)
-                }
-            ) ,
-        elevation = 4.dp
-    ) {
-        Column {
-            Text(
-                text = "Model: "+carro.model,
-                modifier = Modifier.padding(8.dp)
+        Row() {
+            Box (
+                modifier = Modifier
+                    .width(10.dp)
             )
             Text(
-                text = "Type: "+carro.type,
-                modifier = Modifier.padding(8.dp)
+                text = carro.model,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, colorVariable)
+                    .padding(13.dp)
+                    .clickable {
+                        expandDescription = !expandDescription
+                    }
             )
-            Text(
-                text = "Price: R$"+carro.price.toString(),
-                modifier = Modifier.padding(8.dp)
+            Text (
+                text = carro.sold.toString(),
             )
-            Text(
-                text = if(!statusMudado)"Status: This vehicle is available." else "Status: This vehicle is sold.",
-                modifier = Modifier.padding(8.dp)
-            )
+        }
+
+    AnimatedVisibility(visible = expandDescription) {
+
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .combinedClickable(
+                    onClick = {
+                        onClick()
+                    },
+                    onLongClick = {
+                        statusMudado = true
+                    }
+                ),
+            elevation = 4.dp
+        ) {
+            Column {
+                Text(
+                    text = "Model: " + carro.model,
+                    modifier = Modifier.padding(8.dp)
+                )
+                Text(
+                    text = "Type: " + carro.type,
+                    modifier = Modifier.padding(8.dp)
+                )
+                Text(
+                    text = "Price: R$" + carro.price.toString(),
+                    modifier = Modifier.padding(8.dp)
+                )
+                Text(
+                    text = if (!statusMudado) "Status: This vehicle is available." else "Status: This vehicle is sold.",
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
         }
     }
 }
@@ -303,8 +324,8 @@ fun CarList(
         }
     } else {
         Column( modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
+            .fillMaxWidth()
+            .fillMaxHeight()
 
         ){
             Row(
