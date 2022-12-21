@@ -9,6 +9,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.typography
@@ -233,7 +234,12 @@ fun CarView(carro: Carro, onClick: () -> Unit) {
          colorVariable = Color.Red
     }
 
-    Row() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier
+            .height(50.dp)
+    ) {
         Box (
             modifier = Modifier
                 .width(10.dp)
