@@ -9,7 +9,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.typography
@@ -194,7 +193,7 @@ fun CarProfile(carro: Carro) {
                     .padding(8.dp)
             ) {
                 Text (
-                    text = "${carro.model}",
+                    text = carro.model,
                     textAlign = TextAlign.Start,
                     fontWeight = FontWeight.Black,
                     fontSize = 24.sp,
@@ -240,7 +239,7 @@ fun CarView(carro: Carro, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End,
         modifier = Modifier
-            .height(50.dp)
+            .height(70.dp)
     ) {
         Box (
             modifier = Modifier
@@ -248,16 +247,18 @@ fun CarView(carro: Carro, onClick: () -> Unit) {
         )
         Text(
             text = carro.model,
+            fontWeight = FontWeight.Black,
+            fontSize = 24.sp,
             style = if(statusMudado) TextStyle(textDecoration = TextDecoration.LineThrough) else TextStyle(textDecoration = TextDecoration.None),
             modifier = Modifier
                 .fillMaxWidth()
                 .border(2.dp, colorVariable)
-                .padding(13.dp)
+                .padding(8.dp)
                 .clickable {
                     expandDescription = !expandDescription
                 }
         )
-        Text (text = carro.sold.toString())
+        Text (text = if(statusMudado)"sold" else "")
     }
 
     AnimatedVisibility(visible = expandDescription) {
