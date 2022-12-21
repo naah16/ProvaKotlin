@@ -1,7 +1,6 @@
 package com.example.avaliacaopratica
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -34,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import com.example.avaliacaopratica.ui.theme.AvaliacaoPraticaTheme
-import java.lang.Boolean.parseBoolean
 import java.lang.Double.parseDouble
 
 
@@ -78,7 +76,6 @@ fun Body() {
                 var expanded by remember { mutableStateOf(false) }
                 val suggestions = listOf("Hatch", "Truck", "Motorbike", "Sedan", "Pickup Truck", "Van", "SUV")
                 var selectedText by remember { mutableStateOf("") }
-
                 var textfieldSize by remember { mutableStateOf(androidx.compose.ui.geometry.Size.Zero)}
 
                 val icon = if (expanded)
@@ -94,7 +91,6 @@ fun Body() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .onGloballyPositioned { coordinates ->
-                                //This value is used to assign to the DropDown the same width
                                 textfieldSize = coordinates.size.toSize()
                             },
                         label = {Text("Choose a type...")},
@@ -122,7 +118,6 @@ fun Body() {
 
                 //PREÇO
                 var preco by remember { mutableStateOf(TextFieldValue("")) }
-                // Outlined Text input field with input type number. It will open the number keyboard
                 OutlinedTextField(value = preco,
                     modifier = Modifier
                         .padding(8.dp)
@@ -134,6 +129,7 @@ fun Body() {
                         preco = it
                     }
                 )
+
                 var mostrarLista by remember { mutableStateOf(false) }
                 //BOTÃO
                 Column(
@@ -141,39 +137,25 @@ fun Body() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(),
-
-                    // below line is used for specifying vertical arrangement.
                     verticalArrangement = Arrangement.Top,
-
-                    // below line is used for specifying horizontal arrangement.
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    // below line is use to get the context for our app.                  
                     val context = LocalContext.current
-
-                    // below line is use to create a button.
                     Button(
-                        // below line is use to add onclick parameter for our button onclick
                         onClick = {
-                            // when user is clicking the button we are displaying a toast message.
                             Toast.makeText(context, "Car added successfully!", Toast.LENGTH_LONG).show()
                             mostrarLista = true
                         },                        
-                        // in below line we are using modifier which is use to add padding to our button
                         modifier = Modifier.padding(all = Dp(10F)),
-
-                        // below line is use to set or button as enable or disable.
                         enabled = true,
-
-                        // below line is use to add shape for our button.
                         shape = MaterialTheme.shapes.medium
                     )
-                    // below line is use to add text on our button
+
                     {
                         Text(text = "Submit")
                     }
                     if(mostrarLista) {
-                        val strPreco = preco.text.toString()
+                        val strPreco = preco.text
                         CarProfile(carDetails)
 
                         val carro = Carro(modelo.text,selectedText,parseDouble(strPreco))
@@ -181,7 +163,7 @@ fun Body() {
                         CarList(carros = carros) {
                             carDetails = it
                         }
-                        mostrarLista = false;
+                        mostrarLista = false
                     }else{
                         CarList(carros = carros) {
                             carDetails = it
@@ -244,35 +226,32 @@ fun CarView(carro: Carro, onClick: () -> Unit) {
     var statusMudado by remember { mutableStateOf(carro.sold)}
     var expandDescription by remember { mutableStateOf(false)}
     var colorVariable = Color.White
-    if(!statusMudado){
+
+    if(!statusMudado) {
         colorVariable = Color.Green
-    }else{
+    } else {
          colorVariable = Color.Red
     }
 
-        Row() {
-            Box (
-                modifier = Modifier
-                    .width(10.dp)
-            )
-            Text(
-                text = carro.model,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(2.dp, colorVariable)
-                    .padding(13.dp)
-                    .clickable {
-                        expandDescription = !expandDescription
-                    }
-            )
-            Text (
-                text = carro.sold.toString(),
-            )
-        }
+    Row() {
+        Box (
+            modifier = Modifier
+                .width(10.dp)
+        )
+        Text(
+            text = carro.model,
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(2.dp, colorVariable)
+                .padding(13.dp)
+                .clickable {
+                    expandDescription = !expandDescription
+                }
+        )
+        Text (text = carro.sold.toString())
+    }
 
     AnimatedVisibility(visible = expandDescription) {
-
-
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -288,10 +267,6 @@ fun CarView(carro: Carro, onClick: () -> Unit) {
             elevation = 4.dp
         ) {
             Column {
-                Text(
-                    text = "Model: " + carro.model,
-                    modifier = Modifier.padding(8.dp)
-                )
                 Text(
                     text = "Type: " + carro.type,
                     modifier = Modifier.padding(8.dp)
